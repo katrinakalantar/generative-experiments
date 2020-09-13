@@ -1,0 +1,143 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title> Document </title>
+
+</head>
+<body>
+  <script src="../../sources/p5.min.js"></script>
+  <script src="../../sources/rough.js"></script>
+  <script>
+
+    max_rectangles = 100
+    max_size = 300
+    width_ratio = .5
+    rectangles = [];
+    //color_palette = ['#3F97A8', '#97D6E2', '#F9890E', '#E65E15', '#CA3F40']
+    color_palette = ['rgba(63, 151, 168,', 
+                     'rgba(151, 214, 226,',
+                     'rgba(249, 137, 14,',
+                     'rgba(230, 94, 21,',
+                     'rgba(202, 63, 64,']
+    fr = 5
+                     
+
+    function getRndInteger(min, max) {
+      return Math.floor(Math.random() * (max - min) ) + min;
+    }
+
+    function setup() {
+      frameRate(fr);
+      createCanvas(1000, 500);
+
+      background('hsb(0, 0, 100)')
+      const rc = rough.canvas(document.getElementById('defaultCanvas0'));
+
+      for(let i = 0; i < max_rectangles; i++){
+
+      	w = random(max_size)
+        //w = randomGaussian(max_size, 100)
+      	//h = random(max_size)    
+        h = getRndInteger(w - (width_ratio * w), w + (width_ratio * w))
+        x = max(random(w, windowWidth - w), w); //max_radius);
+        y = max(random(h, windowHeight - h), h); //max_radius);
+
+        console.log("----")
+        console.log(x)
+        console.log(y)
+        console.log(x+w)
+        console.log(y+h)
+        if((x+w) > 1000 || (y+h) > 500){
+          continue
+        }
+        
+        
+        care_about_intersect_distribution = [0,0,0,0,0,1]
+        let care_about_intersect = care_about_intersect_distribution[round(random(care_about_intersect_distribution.length - 1))]
+        console.log('hmmm')
+        console.log(care_about_intersect)
+
+      	new_rectangle = new Rectangle(x, y, w, h, rc)
+      	intersects = false
+      	for(let j = 0; j < rectangles.length; j++){
+      		intersects = new_rectangle.intersects(rectangles[j])
+      		if(intersects){
+      			console.log('in break')
+      			console.log(care_about_intersect)
+      			break
+      		}
+      	}
+        rectangles.push(new_rectangle) // always add to rectangles
+      	if((!intersects) || care_about_intersect==0){
+      		console.log('rect len')
+      		console.log(rectangles.length)
+    	  	//rectangles.push(new_rectangle)  // don't always add to retangles
+    	  	new_rectangle.display()
+      	}else{
+      	  break
+          console.log('breaking or continuing')
+      	}
+      	intersects = false
+
+      }
+
+
+    }
+
+    function draw() {
+      //background(220);
+      //noLoop();
+    }
+
+
+    function Rectangle(x, y, width, height, rc) {
+      this.x = x
+      this.y = y
+      this.width = width
+      this.height = height
+
+      this.intersects = function(rectangle) {
+        x1 = rectangle.x
+        y1 = rectangle.y
+        x2 = x1 + rectangle.width
+        y2 = y1 + rectangle.height
+
+        if (this.x > x1) { x1 = this.x; }
+        if (this.y > y1) { y1 = this.y; }
+        if (this.x + this.width < x2) { x2 = this.x + this.width; }
+        if (this.y + this.height < y2) { y2 = this.y + this.height; }
+
+        return(!(x2 <= x1 || y2 <= y1))
+      }
+
+      this.display = function() {
+        //push();
+        //stroke(50);
+        stroke(51)
+        //fill('rgba(0%,0%,0%,0.1)');
+        col = color_palette[round(random(color_palette.length - 1))]
+        col_scribble = col
+        alph = Math.random(.5, 1)
+        col = col+alph+')'
+        fill(col)
+
+
+
+        r_bool = random(1)
+        if(r_bool > .5){
+          rect(this.x, this.y, this.width, this.height );
+        }else{
+          rc.rectangle(this.x, this.y, this.width, this.height, {roughness: 1.5, fill: col_scribble, fillStyle: 'zig-zag',strokeWidth: .3, hachureGap: 5, hachureAngle: random(100)});
+
+        }
+        //rect(this.x, this.y, this.width, this.height );
+        //pop();
+      }
+
+
+    }
+
+</script>

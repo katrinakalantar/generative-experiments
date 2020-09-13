@@ -1,0 +1,119 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title> Document </title>
+
+</head>
+<body>
+	<script src="../../sources/p5.min.js"></script>
+	<script src="../../sources/p5.scribble.js"></script>
+	<script src="../../sources/rough.js"></script>
+	<script type="text/javascript" src="../data/hurricane_data2.json"></script>
+	<script>
+
+		function getRandomInt(min, max) {
+		  min = Math.ceil(min);
+		  max = Math.floor(max);
+		  return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
+		}
+		//var scribble = new Scribble();   
+		/*data = [100,110,111,111,112,111,110,109,100,90,89,87,86,85,85,85,85,80,70,60,70,60,100,
+			100,110,111,111,112,111,110,109,100,80,89,87,86,85,85,85,85,80,70,60,70,60,100,
+			100,110,111,111,112,111,110,109,110,95,89,87,86,85,85,85,85,80,70,60,70,60,100,86,85,85,85,85,80,111,112,111,110,109,100,80,89,87,]
+		*/
+
+		//data = [0,24,5,91,124,408,530,317,571,253,90,0]
+		data = []
+		for(let i = 0; i<getRandomInt(20,45); i++) {data.push(Math.random()*100)}
+
+
+
+		points = []
+
+		/*
+		scribble.bowing = 1;          // changes the bowing of lines
+		scribble.roughness = 1;       // changes the roughness of lines
+		scribble.maxOffset = 2;       // coordinates will get an offset, here you define the max offset
+		scribble.numEllipseSteps = 1; //
+		*/
+
+		Math.radians = function(degrees) {
+		  return degrees * Math.PI / 180;
+		}
+		function get_point_on_circle(angle_in_degrees, radius_value, x0, y0){
+		  angle = Math.radians(angle_in_degrees + 270)
+		  r = radius_value
+		  console.log(radius_value)
+		  //r = random(150,300)
+		  return[x0 + r*cos(angle), y0 + r*sin(angle)]
+		}
+
+		
+
+		function setup() {
+
+		  //createCanvas(windowWidth, windowHeight);
+		  var canvas = createCanvas(600,600);
+		  background(255,255,255)
+		  //background(0,0,0)
+		  const rc = rough.canvas(document.getElementById('defaultCanvas0'));
+		  
+		  fill('rgba(0,0,0, 0.0)');
+
+		  center_x = 300
+		  center_y = 300
+
+		  for(let i = 0; i < data.length; i++){
+		  	console.log('----')
+		  	console.log(i)
+		  	console.log((360/data.length)*i)
+		  	point_values = get_point_on_circle(((360/data.length)*i)+Math.random()*10, 100+data[i]/2, center_x, center_y)
+		  	points.push(point_values)
+		  	//line(center_x, center_y, point_values[0], point_values[1])
+		  	if(i > 0){
+			  	//line(points[i-1][0], points[i-1][1], points[i][0], points[i][1] )
+			  	//curve(center_x, center_y, points[i-1][0], points[i-1][1], points[i][0], points[i][1], center_x, center_y)
+			  	rc.curve([[center_x, center_y], [points[i-1][0], points[i-1][1]], [points[i][0], points[i][1]], [center_x, center_y]],
+			  		{fill: "rgba(255,0,127,.5)",
+			  			fillStyle: 'solid',
+			  			stroke: "rgba(0,0,0,.5)", strokeWidth: .4})
+		  	}
+		  }
+		  //line(points[points.length-1][0], points[points.length-1][1], points[0][0], points[0][1]) // add last connection
+		  //curve(center_x, center_y, points[points.length-1][0], points[points.length-1][1], points[0][0], points[0][1], center_x, center_y)
+		  rc.curve([[center_x, center_y], [points[points.length-1][0], points[points.length-1][1]], [points[0][0], points[0][1]], [center_x, center_y]],{fill: "rgba(255,0,127,.5)",
+			  			fillStyle: 'solid',
+			  			stroke: "rgba(0,0,0,.5)", strokeWidth: .4})
+
+		  center_circle_size = (Math.random()*50)
+		  rc.ellipse(center_x, center_y, center_circle_size,center_circle_size, {stroke: "rgba(0,0,0,.5)", fill:"rgba(0,0,0,.5)", fillStyle:'cross-hatch'});
+
+
+		  new_topo = new TopoFlower(100, 100, 50 )
+		  new_topo.display()
+
+		}
+
+		function draw() {
+		  //background(220);
+		}
+
+		function TopoFlower(x, y, w) {
+		  this.x = x
+		  this.y = y
+		  this.width = w
+
+		  this.display = function() {
+		  	console.log(10)
+			ellipse(this.x, this.y, this.width);
+		  }
+		}
+
+
+
+	</script>
+</body>
+</html>

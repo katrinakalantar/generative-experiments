@@ -1,0 +1,71 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title> Document </title>
+
+</head>
+<body>
+	<script src="../../sources/p5.min.js"></script>
+	<script>
+		
+		i = 1
+		let num_circles = 10
+		let num_lines = 5
+		let max_radius = 100
+		let circle_r = []
+		let circle_x = []
+		let circle_y = []
+
+		function setup() {
+		  frameRate(10)
+		  createCanvas(windowWidth, windowHeight);
+
+		  //create arrays of starting positions for circles
+
+		  for (let c = 0; c < num_circles; c++) {
+		    circle_r[c] = random(max_radius);
+		    circle_x[c] = random(max_radius, windowWidth - max_radius);
+		    circle_y[c] = random(max_radius, windowHeight - max_radius);
+		  }
+
+		}
+
+
+		function draw() {
+		  background(220);
+		  for (let c = 0; c < num_circles; c++) {
+		    ellipse(circle_x[c], circle_y[c], max(0, circle_r[c] + i), max(0, circle_r[c] + i));
+		  }
+		  for (let l = 0; l < num_lines; l++) {
+
+		    let first_centroid = floor(random(circle_x.length))
+		    let second_centroid = floor(random(circle_y.length))
+
+		    line(circle_x[first_centroid],
+		      circle_y[first_centroid],
+		      circle_x[second_centroid],
+		      circle_y[second_centroid]);
+		    
+		  }
+
+		  i = i + 1
+		}
+
+		function mousePressed() {
+		  noLoop();
+		  /*for (let c = 0; c < num_circles; c++) {
+		    ellipse(circle_x[c], circle_y[c], max(0, 0), max(0, 0));
+		  }*/
+		}
+
+		function mouseReleased() {
+		  //loop();
+		  noLoop();
+		}
+
+	</script>
+</body>
+</html>

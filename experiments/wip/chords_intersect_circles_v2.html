@@ -1,0 +1,136 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title> Document </title>
+
+</head>
+<body>
+	<script src="../../sources/p5.min.js"></script>
+	<script>
+
+		max_circles = 30
+		circles = [];
+		let max_radius = 50
+
+		function setup() {
+		  createCanvas(windowWidth, windowHeight);
+
+		  background('hsb(0, 0, 100)')
+
+		  noStroke();
+		  for (let i = 0; i < max_circles; i++) {
+		    r = randomGaussian(max_radius, 25)
+		    x = max(random(max_radius, windowWidth - r), r); 
+		    y = max(random(max_radius, windowHeight - r), r);
+
+		    new_circle = new Circle(x, y, r)
+		    circles.push(new_circle)
+		    new_circle.display()
+
+		  }
+
+		  for (let i = 0; i < circles.length; i++) {
+		    for (let j = i + 1; j < circles.length; j++) {
+		      let chord = circles[i].chord(circles[j])
+
+		      color_palette = ['#3F97A8', '#97D6E2', '#F9890E', '#E65E15', '#CA3F40']
+		      col = color_palette[round(random(color_palette.length - 1))]
+		      stroke(col)
+
+		      strokeWeight(3);
+		      line(chord.x1, chord.y1, chord.x2, chord.y2)
+
+		      add_line = round(random(50))
+		      if (add_line == 5) {
+		        stroke('rgba(0%,0%,0%,0.1)');
+		        strokeWeight(1);
+		        line(circles[i].x, circles[i].y, circles[j].x, circles[j].y)
+		      }
+
+
+
+		    }
+		  }
+
+		}
+
+		function draw() {
+		  //background(220);
+
+		}
+
+		function Circle(x, y, r) {
+		  this.x = x
+		  this.y = y
+		  this.r = r
+
+		  this.intersects = function(circle) {
+		    d = this.distance(circle)
+		    return d < (this.r + circle.r) && d > Math.abs(this.r - circle.r)
+
+		  }
+
+		  this.distance = function(circle) {
+		    d = Math.sqrt(Math.pow(this.x - circle.x, 2) + Math.pow(this.y - circle.y, 2))
+		    return d
+		  }
+
+		  this.chord = function(circle) {
+		    x1 = 0
+		    x2 = 0
+		    y1 = 0
+		    y2 = 0
+		    if (this.intersects(circle)) {
+		      d = this.distance(circle)
+		      //l = (Math.pow(circle.r,2) - Math.pow(Math.pow(this.r, 2) - Math.pow(d, 2)) / (-2*d), 2)
+		      l = (Math.pow(this.r, 2) - Math.pow(circle.r, 2) + Math.pow(d, 2)) / (2 * d)
+		      h = Math.sqrt(Math.pow(this.r, 2) - Math.pow(l, 2))
+
+		      mx = this.x + l * (circle.x - this.x) / d
+		      my = this.y + l * (circle.y - this.y) / d
+
+		      //P2 = mx,my
+
+		      x1 = mx - h * (circle.y - this.y) / d
+		      x2 = mx + h * (circle.y - this.y) / d
+		      y2 = my - h * (circle.x - this.x) / d
+		      y1 = my + h * (circle.x - this.x) / d
+
+
+
+		      // x1 = this.x + Math.sign(this.x - circle.x) * l
+		      // x2 = this.x - Math.sign(this.x - circle.x) * l
+		      // y1 = this.y + h
+		      // y2 = this.y - h
+		    }
+		    return {
+		      x1,
+		      x2,
+		      y1,
+		      y2
+		    }
+		  }
+
+		  this.display = function() {
+		    //push();
+		    //stroke(50);
+		    show_circle = random([0, 0, 0, 0, 0, 0.05, 0.05, 0.1 , 0.1, 0.25, .5]);
+		    fill_var = 'rgba(0,0,0,' + show_circle + ')'
+		    fill(fill_var);
+
+		    show_stroke = random([0, 0, 0, .2]);
+		    stroke_var = 'rgba(0,0,0,' + show_stroke + ')'
+		    stroke(stroke_var)
+
+		    ellipse(this.x, this.y, this.r * 2, this.r * 2);
+		    //pop();
+		  }
+
+		}
+
+	</script>
+</body>
+</html>

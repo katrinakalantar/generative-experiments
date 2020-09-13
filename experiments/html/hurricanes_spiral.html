@@ -1,0 +1,165 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title> Document </title>
+
+</head>
+<body>
+	<script src="../../sources/p5.min.js"></script>
+	<script src="../../sources/p5.scribble.js"></script>
+	<script src="../../sources/rough.js"></script>
+	<script type="text/javascript" src="../data/hurricane_data2.json"></script>
+	<script>
+
+
+		var scribble = new Scribble();   
+		var json_obj_full = JSON.parse(hurricane_data);
+		var json_obj = json_obj_full["2018"]
+
+		var dates_of_interest = ["1985","1990","1995","2000","2005","2010","2015","2019"]//,,"2015","2019"]
+		//var json_obj = JSON.parse(hurricane_data_1999);
+		//var json_obj = JSON.parse(hurricane_data_1996);
+
+
+		scribble.bowing = 1;          // changes the bowing of lines
+		scribble.roughness = 1;       // changes the roughness of lines
+		scribble.maxOffset = 2;       // coordinates will get an offset, here you define the max offset
+		scribble.numEllipseSteps = 1; //
+
+
+		Math.radians = function(degrees) {
+		  return degrees * Math.PI / 180;
+		}
+		function get_point_on_circle(angle_in_degrees, radius_value, x0, y0){
+		  angle = Math.radians(angle_in_degrees + 270)
+		  //x0 = 400
+		  //y0 = 400
+		  r = radius_value //
+		  console.log(radius_value)
+		  //r = random(150,300)
+		  return[x0 + r*cos(angle), y0 + r*sin(angle)]
+		}
+
+		
+
+		function setup() {
+
+		  //createCanvas(windowWidth, windowHeight);
+		  var canvas = createCanvas(1800,1800);
+		  background(255,255,255)
+		  //background(0,0,0)
+		  const rc = rough.canvas(document.getElementById('defaultCanvas0'));
+		  
+		  //ellipse(600, 600, 5 ) //test point
+		  //scribble.scribbleEllipse(100, 100, 30, 30)
+		  //rc.rectangle(10, 10, 200, 200, {fill:'blue', fillStyle: 'cross-hatch', hachureAngle: 90}); // x, y, width, height
+
+
+		  fill('rgba(0,0,0, 0.0)');
+
+		  for(let m = 0; m < dates_of_interest.length; m++){
+
+		  	console.log("hello")
+		  	radius_by_year = (m+1) * 150;//300 //
+		  	json_obj = json_obj_full[dates_of_interest[m]] // take dataset
+
+		  	//center_x = 600*(m+1)
+		  	//center_y = 400
+		  	center_x = 1200
+		  	center_y = 900
+
+		  	fill('rgba(0,0,0,0)')
+			ellipse(center_x, center_y, radius_by_year*2)
+
+		  	max_circles = json_obj.length // 1
+			console.log(max_circles)
+			max_size = 5
+
+
+			for(let i = 0; i < max_circles; i++){
+
+			  	data = json_obj[i]
+			    date_value_ms = Date.parse(data.iso_time)
+			    const dayOfYear = date => Math.floor((date - new Date(date.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24); //covert date to [day-of-year]
+			    day_of_year = dayOfYear(new Date(date_value_ms)); 
+			    point_on_circle = get_point_on_circle(day_of_year, radius_by_year, center_x, center_y)
+			    
+
+			    /*w = 25 //random(max_size)
+			    n = 15
+			    x = 200
+			    y = 200 */
+
+			    w = data["usa_wind"]/3 //10 //random(max_size)
+			    n = data["day_counts"]/2
+			    x = point_on_circle[0]
+			    y = point_on_circle[1]
+			    
+			    new_circle = new Concentric(x, y, w, n, rc)
+			    new_circle.display()
+			  }
+		  }
+
+
+
+		  saveCanvas(canvas, 'myCanvas', 'jpg');
+
+		}
+
+		function draw() {
+		  //background(220);
+		}
+
+		function Concentric(x, y, w, n, rc) {
+		  this.x = x
+		  this.y = y
+		  this.width = w
+		  this.num_circles = n
+
+		  this.display = function() {
+		    elipse_stack_param = 10 //random(5,10)
+		    alpha_param = random(10,255)
+		    for(let j = 0; j < this.num_circles; j++){
+
+		      let c = color(50, 55, 100);
+		      c.setAlpha(alpha_param)
+		      stroke('black')
+		      
+		      r = random(1) // binary variable for selecting options
+
+			  
+			  let c2 = color(0, 204, 204); //light turquoise
+		      c2.setAlpha(50)
+			  
+			  if(r > .8){
+				fill(c2)
+			  }else{
+			  	//let cw = color(0, 102, 102); //dark turquoise
+			  	let cw = color(64, 50, 143); //dark purple-blue
+			  	cw.setAlpha(100)
+			  	fill(cw)
+			  }
+
+			  if(r > .7){
+			  	strokeWeight( r );
+			  	ellipse(this.x, this.y, this.width + (this.num_circles - j)*elipse_stack_param );
+			  }else{
+			  	wh = this.width + (this.num_circles - j)*elipse_stack_param 
+			    strokeWeight( r );
+			    //scribble.scribbleEllipse(this.x, this.y, wh, wh);
+			    rc.circle(this.x, this.y, this.width + (this.num_circles - j)*elipse_stack_param, {roughness: 1.2, fill: c, fillStyle: 'dashed',strokeWidth: .3, hachureGap: 5, hachureAngle: random(100)});
+			  }
+
+		      
+		    }
+		  }
+		}
+
+
+
+	</script>
+</body>
+</html>
