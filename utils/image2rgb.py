@@ -24,5 +24,17 @@ rgb_palette = palette_to_rgb(palette)                                # convert t
 print("\ncolor palette:")
 print(palette)
 
+output_string = '[\'rgb'
+print(output_string)
+
+for i in palette:
+	output_string += (str(i))
+	output_string += '\',\'rgb'
+
+print(output_string)
+output_string = output_string[0:len(output_string)-5]
+output_string += ']'
+print(output_string)
+
 plt.bar([i for i in range(n_colors)], [10 for i in range(n_colors)],color=sns.color_palette(rgb_palette))
 plt.savefig('palette_colors.png')
