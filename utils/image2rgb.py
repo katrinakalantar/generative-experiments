@@ -22,7 +22,7 @@ palette = color_thief.get_palette(color_count=n_colors)              # build a c
 rgb_palette = palette_to_rgb(palette)                                # convert to RGB scale
 
 print("\ncolor palette:")
-print(rgb_palette)
+print(palette)
 
 plt.bar([i for i in range(n_colors)], [10 for i in range(n_colors)],color=sns.color_palette(rgb_palette))
 plt.savefig('palette_colors.png')
